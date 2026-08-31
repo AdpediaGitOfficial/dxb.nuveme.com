@@ -18,9 +18,12 @@ jobs:
           key: ${{ secrets.DO_SSH_KEY }}
           port: ${{ secrets.DO_PORT }}
           script: |
+            # Explicitly export environment variables for NVM and PATH
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            export PATH=$PATH:$NVM_DIR/versions/node/$(ls $NVM_DIR/versions/node 2>/dev/null | tail -n 1)/bin
 
+            # Navigate to directory and pull latest code
             cd /var/www/html/claude-nuveme/nuveme_frontend/testpipeline
             git pull origin main
             npm install
