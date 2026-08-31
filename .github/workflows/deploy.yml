@@ -24,7 +24,7 @@ jobs:
             export PATH=$PATH:$NVM_DIR/versions/node/$(ls $NVM_DIR/versions/node 2>/dev/null | tail -n 1)/bin
 
             # Navigate to directory and pull latest code
-            cd /var/www/html/claude-nuveme/nuveme_frontend/testpipeline
+            cd /var/www/html/claude-nuveme/nuveme_frontend/testpipeline/dxb.nuveme.com
             git pull origin main
             npm install
             npm run build
