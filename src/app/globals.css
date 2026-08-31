@@ -1,0 +1,308 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Saol Display — the licensed display face from the design.
+   The files are not in the repo (see public/fonts/README.md). These rules are
+   declared unconditionally: if the WOFF2 is absent the browser fails the fetch
+   and falls through to the next family in --font-display, so nothing breaks.
+   ------------------------------------------------------------------------ */
+@font-face {
+  font-family: "Saol Display";
+  src: url("/fonts/saol-display-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Saol Display";
+  src: url("/fonts/saol-display-medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------------------------------------------------------------------------
+   NUVÉ design tokens
+   Sourced from the Figma file (node 981:431). Every colour, type ramp and
+   spacing step used by a component should come from here rather than a
+   hardcoded value, so a rebrand is a single-file change.
+   ------------------------------------------------------------------------ */
+@theme {
+  /* Surfaces --------------------------------------------------------------- */
+  /* The page ground is white; the dark sections are panels laid on top of it,
+     inset by the rail so a hairline of ground frames each one. */
+  --color-paper: #ffffff;
+  --color-ink: #000000;
+  --color-surface: #0e0e0e;
+  --color-surface-raised: #141414;
+  --color-hairline: rgba(255, 255, 255, 0.12);
+  --color-hairline-strong: rgba(255, 255, 255, 0.24);
+
+  /* Foreground ------------------------------------------------------------- */
+  --color-bone: #ffffff;
+  --color-bone-strong: rgba(255, 255, 255, 0.88);
+  --color-bone-muted: rgba(255, 255, 255, 0.7);
+  --color-bone-subtle: rgba(255, 255, 255, 0.6);
+  --color-bone-faint: rgba(255, 255, 255, 0.4);
+
+  /* Typefaces -------------------------------------------------------------- */
+  /* `Saol Display` is the licensed face used in the source design; the
+     next/font fallback renders wherever the licence is not installed. */
+  --font-display: "Saol Display", var(--font-playfair), "Times New Roman", serif;
+  --font-sans: var(--font-lexend), ui-sans-serif, system-ui, sans-serif;
+  /* Body copy uses the same secondary face, at a looser measure. */
+  --font-prose: var(--font-lexend), ui-sans-serif, system-ui, sans-serif;
+
+  /* Layout ----------------------------------------------------------------- */
+  --spacing-gutter: 1.5rem;
+  --container-shell: 107.875rem; /* 1726px content column from the artboard */
+  --canvas-shell: 120rem; /* 1920px artboard; the gutters live inside it */
+  --rail: 0.25rem; /* 4px white gutter framing every dark panel */
+
+  /* Motion ----------------------------------------------------------------- */
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Even in and out — a hard ease-out makes a wipe snap then crawl. */
+  --ease-wipe: cubic-bezier(0.62, 0.04, 0.3, 0.98);
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: var(--color-hairline);
+  }
+
+  html {
+    /* Paint the root as well as the body: a transparent html lets whatever is
+       behind the document show through at the edges — the white overscroll
+       band on iOS, and the host's ground when the page is embedded. */
+    background-color: var(--color-paper);
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* Respect users who ask for less movement. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-bone);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-bone);
+    color: var(--color-ink);
+  }
+}
+
+@layer components {
+  /*
+    Type ramp.
+
+    The artboard is a fixed 1920px canvas with a 1726px content column, which
+    the container reproduces as `min(89.9vw, 1726px)`. One design pixel is
+    therefore 89.9 / 1726 = 0.05208vw, and each size below is its Figma value
+    expressed in vw: the ramp stays in proportion to the layout at every width
+    instead of only at 1920. The upper clamp pins the artboard size on wider
+    screens; the lower clamp keeps small screens readable.
+
+      eyebrow / lede  20px -> 1.042vw      display-2  60px -> 3.125vw
+      display-1      100px -> 5.209vw      display-3  36px -> 1.875vw
+  */
+
+  /*
+    Section label: 20px, 6px tracking, 60% white. The design sets these in
+    sentence or title case with wide tracking — "Curated luxury real estate",
+    "Signature Properties" — so the casing comes from the content, not from a
+    text-transform.
+  */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-weight: 300;
+    font-size: clamp(0.6875rem, 1.042vw, 1.25rem);
+    letter-spacing: 0.3em;
+    color: currentColor;
+    opacity: 0.6;
+  }
+
+  .display-1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.5rem, 5.209vw, 6.25rem);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+
+  .display-2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.75rem, 3.125vw, 3.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.005em;
+  }
+
+  .display-3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.25rem, 1.875vw, 2.25rem);
+    line-height: 1.1;
+  }
+
+  .prose-lede {
+    font-family: var(--font-prose);
+    font-weight: 300;
+    font-size: clamp(0.9375rem, 1.042vw, 1.25rem);
+    line-height: 1.45;
+    letter-spacing: -0.02em;
+    color: currentColor;
+    opacity: 0.72;
+  }
+
+  /*
+    Interior-page body copy.
+
+    The home artboard sets body text in Lexend Light at 1.45 with a -0.02em
+    track and 72% ink (`.prose-lede`). The interior artboards set it in Lexend
+    ExtraLight at 1.4, untracked, at 80% — a lighter, wider column that carries
+    the longer passages. Both are drawn; this is the second one, measured off
+    node 981:1088. Colour comes from `currentColor` so it reads on either
+    ground.
+  */
+  .prose-body {
+    font-family: var(--font-prose);
+    font-weight: 200;
+    font-size: clamp(0.9375rem, 1.042vw, 1.25rem);
+    line-height: 1.4;
+    color: currentColor;
+    opacity: 0.8;
+  }
+
+  /* Hairline rules that separate stat cells and list rows. */
+  .rule {
+    height: 1px;
+    background-color: var(--color-hairline);
+  }
+}
+
+@utility text-balance-title {
+  text-wrap: balance;
+}
+
+/*
+  The partner rail. The track holds the logo set twice and travels exactly one
+  set's width, so the loop is seamless. Hovering pauses it, and the whole thing
+  stands still for anyone who asked for reduced motion.
+*/
+@keyframes marquee-x {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/*
+  One loop of the set, travelling exactly one set's width. The duration is a
+  variable rather than a constant so a second rail can hold the *speed* of the
+  partner rail rather than its period: a shorter track covering the same
+  distance-per-second needs a proportionally shorter duration.
+*/
+@utility marquee-track {
+  animation: marquee-x var(--marquee-duration, 42s) linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/*
+  A dark panel on the white ground. The rail on the sides and top is the 4px
+  of page ground the design leaves around every black block; where two panels
+  meet it reads as a seam, and where a panel follows a white section it is
+  invisible against the ground.
+*/
+@utility panel {
+  background-color: var(--color-ink);
+  color: var(--color-bone);
+  margin-inline: var(--rail);
+  margin-top: var(--rail);
+}
+
+/*
+  The glass system.
+
+  The design builds every raised control out of two ingredients: a translucent
+  fill and a background blur. Three blur strengths recur across the file — 15px
+  on controls, 28px on the card panels, 50px on the large washes — so the two
+  utilities below carry the control-sized pair and everything else states its
+  own blur.
+
+  `glass-rail` is the tray a group of controls sits in (Figma "Rectangle 126",
+  981:1045). Figma gives it a GLASS effect rather than a background blur:
+  refraction 0.46, depth 100, light 277deg at 0.1, splay 0.39. CSS has no
+  equivalent for refraction or splay, so this reproduces the fill and adds the
+  file's control blur; the light edge is not attempted. Its blur radius in
+  Figma is 0, so the blur here is an approximation of the glass, not a
+  transcription of it.
+
+  `glass-pane` is the selected control inside the tray (981:1048 / 981:467 --
+  the same 100x49 pane in the listings row and the hero search bar). The
+  hairline is a gradient that runs dark, catches the light at the midpoint and
+  falls dark again; that edge, not the fill, is what makes it read as glass on
+  a dark ground. It is painted with `border-image`, which is only safe because
+  the pane has no corner radius -- `border-image` ignores `border-radius`.
+*/
+@utility glass-rail {
+  background-color: color-mix(in srgb, #0a0a0a 42%, transparent);
+  backdrop-filter: blur(15px);
+}
+
+@utility glass-pane {
+  background-color: color-mix(in srgb, #000 19%, transparent);
+  backdrop-filter: blur(15px);
+  border: 0.4px solid transparent;
+  border-image: linear-gradient(
+      264deg,
+      #121212 0%,
+      #dedede 50%,
+      #3d3d3d 100%
+    )
+    1;
+}
+
+/* A section that sits directly on the page ground. */
+@utility on-paper {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
