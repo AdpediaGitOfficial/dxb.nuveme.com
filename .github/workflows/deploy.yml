@@ -16,13 +16,13 @@ jobs:
           host: ${{ secrets.DO_HOST }}
           username: ${{ secrets.DO_USERNAME }}
           key: ${{ secrets.DO_SSH_KEY }}
-          port: ${{ secrets.DO_PORT }}  # <--- Pass your custom SSH port here
+          port: ${{ secrets.DO_PORT }}
           script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
             cd /var/www/html/claude-nuveme/nuveme_frontend/testpipeline
-            sudo git pull origin main
-            sudo npm install
-            sudo npm run build
+            git pull origin main
+            npm install
+            npm run build
             
